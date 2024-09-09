@@ -16,8 +16,10 @@ const io = new Server(server, {
 
 
 app.use(cors({
-    origin: 'http://localhost:3000', // Replace with your React app's URL
-  }));
+  origin: 'http://localhost:3000',  // Allow requests from React app
+  methods: ['GET', 'POST'],  // Allowed methods
+  credentials: true,  // Allow credentials (optional, based on your setup)
+}));
   
 io.on('connection', (socket) => {
   console.log('A user connected');
