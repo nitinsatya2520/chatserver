@@ -8,27 +8,22 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: 'http://localhost:3000',
-    methods: ['GET', 'POST']
+    origin: 'https://kns-chat-app.vercel.app/',  // Replace with your actual client origin in production
+    methods: ['GET', 'POST'],
   }
 });
 
-
-
 app.use(cors({
-  origin: 'http://localhost:3000',  // Allow requests from React app
-  methods: ['GET', 'POST'],  // Allowed methods
-  credentials: true,  // Allow credentials (optional, based on your setup)
+  origin: 'http://localhost:3000',
+  methods: ['GET', 'POST'],
+  credentials: true,
 }));
-  
+
 io.on('connection', (socket) => {
   console.log('A user connected');
-
-  // Listen for message events and broadcast them with the username
   socket.on('message', (payload) => {
-    io.emit('message', payload); // Broadcast to all users
+    io.emit('message', payload); // Broadcast message
   });
-
   socket.on('disconnect', () => {
     console.log('User disconnected');
   });
