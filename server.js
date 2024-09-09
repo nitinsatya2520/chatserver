@@ -13,7 +13,7 @@ const io = new Server(server, {
   }
 });
 
-app.use(cors());
+
 
 app.use(cors({
     origin: 'http://localhost:3000', // Replace with your React app's URL
