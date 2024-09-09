@@ -1,17 +1,13 @@
 {
-  "name": "server",
+  "name": "chat-app-server",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "index.js", 
   "scripts": {
-    "start": "node index.js",  
+    "start": "node index.js",
     "build": "npm run start"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
   "dependencies": {
-    "express": "^4.19.2",
-    "socket.io": "^4.7.5"
+    "express": "^4.17.1",
+    "socket.io": "^4.0.0"
   }
 }
