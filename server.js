@@ -11,7 +11,7 @@ const allowedOrigins = ['http://localhost:3000', 'https://kns-chat-app.vercel.ap
 
 const io = new Server(server, {
   cors: {
-    origin: allowedOrigins,
+    origin: 'https://kns-chat-app.vercel.app',
     methods: ['GET', 'POST'],
     credentials: true,
   },
