@@ -1,7 +1,7 @@
 const express = require('express');
 const http = require('http');
 const cors = require('cors');
-const { Pool } = require('pg'); // Change this line
+const { Pool } = require('pg');
 require('dotenv').config(); // Load environment variables
 
 const app = express();
@@ -26,7 +26,7 @@ app.use(cors({
 // Middleware to parse JSON bodies
 app.use(express.json());
 
-// Set up PostgreSQL connection pool using pg
+// Set up PostgreSQL connection pool using Vercel Postgres
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL || 'postgres://default:ore8uT4Oclqm@ep-billowing-union-a43tqmqf.us-east-1.aws.neon.tech:5432/verceldb?sslmode=require',
   ssl: {
@@ -50,15 +50,19 @@ app.get('/messages', async (req, res) => {
     res.json(rows);
   } catch (err) {
     console.error('Error fetching messages:', err);
-    res.status(500).send('Server Error');
+    res.status(500).json({ error: 'Server Error', details: err.message });
   }
 });
 
 // Endpoint to post a new message
 app.post('/messages', async (req, res) => {
   const { sender, recipient, content } = req.body;
+
+  // Log the request body for debugging
+  console.log('Received request body:', req.body);
+
   if (!sender || !recipient || !content) {
-    return res.status(400).send('Sender, recipient, and content are required');
+    return res.status(400).json({ error: 'Sender, recipient, and content are required' });
   }
 
   try {
@@ -66,7 +70,7 @@ app.post('/messages', async (req, res) => {
     res.status(201).send('Message created');
   } catch (err) {
     console.error('Error saving message to PostgreSQL:', err);
-    res.status(500).send('Server Error');
+    res.status(500).json({ error: 'Server Error', details: err.message });
   }
 });
 
