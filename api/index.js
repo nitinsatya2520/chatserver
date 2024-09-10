@@ -1,14 +1,15 @@
+// server/api/index.js
 const express = require('express');
 const http = require('http');
 const cors = require('cors');
-const { Pool } = require('pg');
+const { Pool } = require('pg'); // Using 'pg' instead of '@vercel/postgres'
 require('dotenv').config(); // Load environment variables
 
 const app = express();
 const server = http.createServer(app);
 
 // Define allowed origins
-const allowedOrigins = ['http://localhost:3000', 'https://kns-chat-app.vercel.app'];
+const allowedOrigins = ['http://localhost:3000', 'https://chatserver-psi.vercel.app'];
 
 // Configure CORS
 app.use(cors({
@@ -26,7 +27,7 @@ app.use(cors({
 // Middleware to parse JSON bodies
 app.use(express.json());
 
-// Set up PostgreSQL connection pool using Vercel Postgres
+// Set up PostgreSQL connection pool
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL || 'postgres://default:ore8uT4Oclqm@ep-billowing-union-a43tqmqf.us-east-1.aws.neon.tech:5432/verceldb?sslmode=require',
   ssl: {
@@ -50,19 +51,15 @@ app.get('/messages', async (req, res) => {
     res.json(rows);
   } catch (err) {
     console.error('Error fetching messages:', err);
-    res.status(500).json({ error: 'Server Error', details: err.message });
+    res.status(500).send('Server Error');
   }
 });
 
 // Endpoint to post a new message
 app.post('/messages', async (req, res) => {
   const { sender, recipient, content } = req.body;
-
-  // Log the request body for debugging
-  console.log('Received request body:', req.body);
-
   if (!sender || !recipient || !content) {
-    return res.status(400).json({ error: 'Sender, recipient, and content are required' });
+    return res.status(400).send('Sender, recipient, and content are required');
   }
 
   try {
@@ -70,7 +67,7 @@ app.post('/messages', async (req, res) => {
     res.status(201).send('Message created');
   } catch (err) {
     console.error('Error saving message to PostgreSQL:', err);
-    res.status(500).json({ error: 'Server Error', details: err.message });
+    res.status(500).send('Server Error');
   }
 });
 
