@@ -1,7 +1,7 @@
 const express = require('express');
 const http = require('http');
 const cors = require('cors');
-const { Pool } = require('@vercel/postgres');
+const { Pool } = require('pg'); // Change this line
 require('dotenv').config(); // Load environment variables
 
 const app = express();
@@ -26,7 +26,7 @@ app.use(cors({
 // Middleware to parse JSON bodies
 app.use(express.json());
 
-// Set up PostgreSQL connection pool using Vercel Postgres
+// Set up PostgreSQL connection pool using pg
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL || 'postgres://default:ore8uT4Oclqm@ep-billowing-union-a43tqmqf.us-east-1.aws.neon.tech:5432/verceldb?sslmode=require',
   ssl: {
