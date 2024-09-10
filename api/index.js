@@ -1,9 +1,7 @@
 const express = require('express');
 const http = require('http');
-const { Server } = require('socket.io');
 const cors = require('cors');
-const { Pool } = require('pg'); // Import pg Pool for PostgreSQL
-require('dotenv').config(); // To load environment variables
+const { Pool } = require('@vercel/postgres'); // Import Vercel Postgres Pool
 
 const app = express();
 const server = http.createServer(app);
@@ -24,9 +22,9 @@ app.use(cors({
   credentials: true,
 }));
 
-// Set up PostgreSQL connection pool
+// Set up PostgreSQL connection pool using Vercel Postgres
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
+  connectionString: process.env.DATABASE_URL || 'postgres://default:ore8uT4Oclqm@ep-billowing-union-a43tqmqf.us-east-1.aws.neon.tech:5432/verceldb?sslmode=require',
   ssl: {
     rejectUnauthorized: false, // Set to true if your database requires SSL
   },
@@ -41,8 +39,19 @@ pool.query('SELECT NOW()', (err, res) => {
   }
 });
 
+// Define routes
+app.get('/messages', async (req, res) => {
+  try {
+    const { rows } = await pool.query('SELECT * FROM messages');
+    res.json(rows);
+  } catch (err) {
+    console.error('Error fetching messages:', err);
+    res.status(500).send('Server Error');
+  }
+});
+
 // Initialize Socket.IO
-const io = new Server(server, {
+const io = require('socket.io')(server, {
   cors: {
     origin: allowedOrigins,
     methods: ['GET', 'POST'],
