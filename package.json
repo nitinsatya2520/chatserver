@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "main": "server.js", 
   "scripts": {
-    "start": "node index.js"
-    
+    "start": "node server.js",  
+    "build": "echo 'No build step required'"  
   },
   "dependencies": {
     "express": "^4.17.1",
