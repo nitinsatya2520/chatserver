@@ -20,7 +20,7 @@ const io = new Server(server, {
     methods: ['GET', 'POST'],
     credentials: true,
   },
-  transports: ['websocket'],
+  transports: ['websocket', 'polling'], // Allow polling as fallback
 });
 
 io.on('connection', (socket) => {
