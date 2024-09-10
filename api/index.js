@@ -7,7 +7,8 @@ require('dotenv').config(); // Load environment variables
 const app = express();
 
 // Define allowed origins
-const allowedOrigins = ['http://localhost:3000', 'https://chatserver-psi.vercel.app'];
+const allowedOrigins = ['http://localhost:3000', 'https://kns-chat-app.vercel.app'];
+
 
 // Configure CORS
 app.use(cors({
