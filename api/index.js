@@ -3,6 +3,7 @@ const http = require('http');
 const { Server } = require('socket.io');
 const cors = require('cors');
 const { Pool } = require('pg'); // Import pg Pool for PostgreSQL
+require('dotenv').config(); // To load environment variables
 
 const app = express();
 const server = http.createServer(app);
@@ -25,7 +26,7 @@ app.use(cors({
 
 // Set up PostgreSQL connection pool
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL || 'postgres://default:ore8uT4Oclqm@ep-billowing-union-a43tqmqf.us-east-1.aws.neon.tech:5432/verceldb?sslmode=require',
+  connectionString: process.env.DATABASE_URL,
   ssl: {
     rejectUnauthorized: false, // Set to true if your database requires SSL
   },
