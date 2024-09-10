@@ -1,14 +1,13 @@
+// server/api/index.js
 const express = require('express');
-const http = require('http');
 const cors = require('cors');
-const { Pool } = require('pg'); // Change this line
+const { Pool } = require('pg'); // Using 'pg' instead of '@vercel/postgres'
 require('dotenv').config(); // Load environment variables
 
 const app = express();
-const server = http.createServer(app);
 
 // Define allowed origins
-const allowedOrigins = ['http://localhost:3000', 'https://kns-chat-app.vercel.app'];
+const allowedOrigins = ['http://localhost:3000', 'https://chatserver-psi.vercel.app'];
 
 // Configure CORS
 app.use(cors({
@@ -26,7 +25,7 @@ app.use(cors({
 // Middleware to parse JSON bodies
 app.use(express.json());
 
-// Set up PostgreSQL connection pool using pg
+// Set up PostgreSQL connection pool
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL || 'postgres://default:ore8uT4Oclqm@ep-billowing-union-a43tqmqf.us-east-1.aws.neon.tech:5432/verceldb?sslmode=require',
   ssl: {
@@ -70,7 +69,5 @@ app.post('/messages', async (req, res) => {
   }
 });
 
-const PORT = process.env.PORT || 4000;
-server.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+// Export the Express app as a serverless function handler
+module.exports = app;

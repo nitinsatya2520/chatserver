@@ -1,12 +1,10 @@
 // server/api/index.js
 const express = require('express');
-const http = require('http');
 const cors = require('cors');
 const { Pool } = require('pg'); // Using 'pg' instead of '@vercel/postgres'
 require('dotenv').config(); // Load environment variables
 
 const app = express();
-const server = http.createServer(app);
 
 // Define allowed origins
 const allowedOrigins = ['http://localhost:3000', 'https://chatserver-psi.vercel.app'];
@@ -71,7 +69,5 @@ app.post('/messages', async (req, res) => {
   }
 });
 
-const PORT = process.env.PORT || 4000;
-server.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+// Export the Express app as a serverless function handler
+module.exports = app;
