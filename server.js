@@ -1,7 +1,8 @@
 const express = require('express');
 const http = require('http');
 const cors = require('cors');
-const { Pool } = require('@vercel/postgres'); // Import Vercel Postgres Pool
+const { Pool } = require('@vercel/postgres');
+require('dotenv').config(); // Load environment variables
 
 const app = express();
 const server = http.createServer(app);
@@ -12,7 +13,7 @@ const allowedOrigins = ['http://localhost:3000', 'https://kns-chat-app.vercel.ap
 // Configure CORS
 app.use(cors({
   origin: (origin, callback) => {
-    if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+    if (allowedOrigins.includes(origin) || !origin) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));
@@ -59,7 +60,7 @@ app.post('/messages', async (req, res) => {
   if (!sender || !recipient || !content) {
     return res.status(400).send('Sender, recipient, and content are required');
   }
-  
+
   try {
     await pool.query('INSERT INTO messages(sender, recipient, content) VALUES($1, $2, $3)', [sender, recipient, content]);
     res.status(201).send('Message created');
