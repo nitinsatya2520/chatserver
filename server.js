@@ -1,8 +1,7 @@
 const express = require('express');
 const http = require('http');
-const { Server } = require('socket.io');
 const cors = require('cors');
-const { Pool } = require('pg'); // Import pg Pool for PostgreSQL
+const { Pool } = require('@vercel/postgres'); // Import Vercel Postgres Pool
 
 const app = express();
 const server = http.createServer(app);
@@ -23,7 +22,10 @@ app.use(cors({
   credentials: true,
 }));
 
-// Set up PostgreSQL connection pool
+// Middleware to parse JSON bodies
+app.use(express.json());
+
+// Set up PostgreSQL connection pool using Vercel Postgres
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL || 'postgres://default:ore8uT4Oclqm@ep-billowing-union-a43tqmqf.us-east-1.aws.neon.tech:5432/verceldb?sslmode=require',
   ssl: {
@@ -40,33 +42,31 @@ pool.query('SELECT NOW()', (err, res) => {
   }
 });
 
-// Initialize Socket.IO
-const io = new Server(server, {
-  cors: {
-    origin: allowedOrigins,
-    methods: ['GET', 'POST'],
-    credentials: true,
-  },
-  transports: ['websocket', 'polling'],
+// Endpoint to get messages
+app.get('/messages', async (req, res) => {
+  try {
+    const { rows } = await pool.query('SELECT * FROM messages ORDER BY timestamp DESC');
+    res.json(rows);
+  } catch (err) {
+    console.error('Error fetching messages:', err);
+    res.status(500).send('Server Error');
+  }
 });
 
-io.on('connection', (socket) => {
-  console.log('A user connected');
-
-  // Store message in PostgreSQL
-  socket.on('message', async (payload) => {
-    try {
-      // Insert message into database
-      await pool.query('INSERT INTO messages(username, message) VALUES($1, $2)', [payload.username, payload.message]);
-      io.emit('message', payload);
-    } catch (err) {
-      console.error('Error saving message to PostgreSQL:', err);
-    }
-  });
-
-  socket.on('disconnect', () => {
-    console.log('User disconnected');
-  });
+// Endpoint to post a new message
+app.post('/messages', async (req, res) => {
+  const { sender, recipient, content } = req.body;
+  if (!sender || !recipient || !content) {
+    return res.status(400).send('Sender, recipient, and content are required');
+  }
+  
+  try {
+    await pool.query('INSERT INTO messages(sender, recipient, content) VALUES($1, $2, $3)', [sender, recipient, content]);
+    res.status(201).send('Message created');
+  } catch (err) {
+    console.error('Error saving message to PostgreSQL:', err);
+    res.status(500).send('Server Error');
+  }
 });
 
 const PORT = process.env.PORT || 4000;
