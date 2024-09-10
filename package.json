@@ -4,7 +4,7 @@
   "main": "server.js", 
   "scripts": {
     "start": "node index.js",
-    "build": "npm run start"
+    
   },
   "dependencies": {
     "express": "^4.17.1",
