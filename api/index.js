@@ -1,32 +1,31 @@
-const express = require('express');
-const http = require('http');
 const { Server } = require('socket.io');
 const cors = require('cors');
+const express = require('express');
 
 const app = express();
-const server = http.createServer(app);
 
 const allowedOrigins = ['http://localhost:3000', 'https://kns-chat-app.vercel.app'];
 
 app.use(cors({
-  origin: ['http://localhost:3000', 'https://kns-chat-app.vercel.app'],
+  origin: allowedOrigins,
   methods: ['GET', 'POST'],
   credentials: true,
 }));
 
+let server = require('http').createServer(app);
+
 const io = new Server(server, {
   cors: {
-    origin: ['http://localhost:3000', 'https://kns-chat-app.vercel.app'],
+    origin: allowedOrigins,
     methods: ['GET', 'POST'],
     credentials: true,
   },
-  transports: ['websocket'], // Explicitly specify WebSocket transport
+  transports: ['websocket'],
 });
-
 
 io.on('connection', (socket) => {
   console.log('A user connected');
-  
+
   socket.on('message', (payload) => {
     io.emit('message', payload);
   });
@@ -36,7 +35,11 @@ io.on('connection', (socket) => {
   });
 });
 
-const PORT = process.env.PORT || 4000;
-server.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+module.exports = (req, res) => {
+  if (!server.listening) {
+    server.listen(4000, () => {
+      console.log('Server running on port 4000');
+    });
+  }
+  res.status(200).send('Socket.IO Server is running.');
+};
