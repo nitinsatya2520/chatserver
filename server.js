@@ -9,18 +9,20 @@ const server = http.createServer(app);
 const allowedOrigins = ['http://localhost:3000', 'https://kns-chat-app.vercel.app'];
 
 app.use(cors({
-  origin: allowedOrigins,
+  origin: ['http://localhost:3000', 'https://kns-chat-app.vercel.app'],
   methods: ['GET', 'POST'],
   credentials: true,
 }));
 
 const io = new Server(server, {
   cors: {
-    origin: allowedOrigins,
+    origin: ['http://localhost:3000', 'https://kns-chat-app.vercel.app'],
     methods: ['GET', 'POST'],
     credentials: true,
   },
+  transports: ['websocket'], // Explicitly specify WebSocket transport
 });
+
 
 io.on('connection', (socket) => {
   console.log('A user connected');
