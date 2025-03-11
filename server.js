@@ -1,4 +1,3 @@
-// server/api/index.js
 const express = require('express');
 const cors = require('cors');
 const { Pool } = require('pg'); // Using 'pg' instead of '@vercel/postgres'
@@ -7,7 +6,7 @@ require('dotenv').config(); // Load environment variables
 const app = express();
 
 // Define allowed origins
-const allowedOrigins = ['http://localhost:3000', 'https://chatserver-psi.vercel.app'];
+const allowedOrigins = ['http://localhost:3000', 'https://kns-chat-app.vercel.app'];
 
 // Configure CORS
 app.use(cors({
@@ -18,7 +17,7 @@ app.use(cors({
       callback(new Error('Not allowed by CORS'));
     }
   },
-  methods: ['GET', 'POST'],
+  methods: ['GET', 'POST', 'DELETE'],
   credentials: true,
 }));
 
@@ -69,5 +68,22 @@ app.post('/messages', async (req, res) => {
   }
 });
 
+// Endpoint to delete messages for a user
+app.post('/leave-chat', async (req, res) => {
+  const { sender } = req.body;
+  if (!sender) {
+    return res.status(400).send('Sender is required');
+  }
+
+  try {
+    await pool.query('DELETE FROM messages WHERE sender = $1', [sender]);
+    res.status(200).send('Messages deleted');
+  } catch (err) {
+    console.error('Error deleting messages:', err);
+    res.status(500).send('Server Error');
+  }
+});
+
 // Export the Express app as a serverless function handler
 module.exports = app;
+
