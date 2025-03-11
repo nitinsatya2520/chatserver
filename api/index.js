@@ -148,11 +148,7 @@ app.post('/messages/:id/reaction', async (req, res) => {
   }
 });
 
-// Start server
-const PORT = process.env.PORT || 5000;
-server.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+
 
 // WebSocket Connection for Video Call
 io.on('connection', (socket) => {
@@ -171,4 +167,12 @@ io.on('connection', (socket) => {
   socket.on('disconnect', () => {
     console.log('User disconnected:', socket.id);
   });
+});
+
+
+
+// Start server
+const PORT = process.env.PORT || 5000;
+server.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
